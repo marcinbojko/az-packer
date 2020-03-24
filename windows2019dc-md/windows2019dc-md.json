@@ -1,0 +1,106 @@
+
+{
+    "variables": {
+       "azure_ad_tenant_id": "",
+       "azure_subscription_id": "",
+       "app_id": "",
+       "client_secret": "",
+       "location": "",
+       "managed_image_resource_group_name": "",
+       "os_disk_size_gb": "127",
+       "managed_image_name": "packer-windows2019-{{isotime \"200601020304\"}}",
+       "temp_compute_name": "packer-w2k19",
+       "vm_size": "Standard_A2_v2",
+       "image_publisher": "MicrosoftWindowsServer",
+       "image_offer": "WindowsServer",
+       "image_sku":"2019-Datacenter",
+       "image_version": "latest"
+     },
+     "builders": [
+       {
+         "type": "azure-arm",
+         "subscription_id": "{{user `azure_subscription_id`}}",
+         "tenant_id": "{{user `azure_ad_tenant_id`}}",
+         "client_id": "{{user `app_id`}}",
+         "client_secret": "{{user `client_secret`}}",
+         "location": "{{ user `location`}}",
+         "vm_size": "{{ user `vm_size`}}",
+         "temp_compute_name" : "{{ user `temp_compute_name`}}",
+         "os_type": "Windows",
+         "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
+         "managed_image_name": "{{user `managed_image_name`}}",
+         "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
+         "image_publisher": "{{user `image_publisher`}}",
+         "image_offer": "{{user `image_offer`}}",
+         "image_sku": "{{user `image_sku`}}",
+         "image_version": "{{ user `image_version`}}",
+         "communicator": "winrm",
+         "winrm_use_ssl": "true",
+         "winrm_insecure": "true",
+         "winrm_timeout": "30m",
+         "winrm_username": "packer"
+       }
+     ],
+     "provisioners": [
+      {
+        "type": "powershell",
+        "script": "./extra/scripts/azure/bootstrap.ps1"
+      },
+      {
+        "type": "powershell",
+        "script": "./extra/scripts/phase-1.ps1"
+      },
+      {
+        "type": "windows-restart",
+        "restart_timeout": "1h"
+      },
+      {
+        "type": "powershell",
+        "script": "./extra/scripts/phase-2.ps1"
+      },
+      {
+        "type": "powershell",
+        "script": "./extra/scripts/phase-3.ps1"
+      },
+      {
+        "type": "windows-restart",
+        "restart_timeout": "2h"
+      },
+      {
+        "type": "powershell",
+        "elevated_user": "adpacker",
+        "elevated_password": "xBph2L?h",
+        "script": "./extra/scripts/windows-updates.ps1"
+      },
+      {
+        "type": "windows-restart",
+        "restart_timeout": "2h"
+      },
+      {
+        "type": "powershell",
+        "elevated_user": "adpacker",
+        "elevated_password": "xBph2L?h",
+        "script": "./extra/scripts/windows-updates.ps1"
+      },
+      {
+        "type": "windows-restart",
+        "restart_timeout": "2h"
+      },
+       {
+        "type": "powershell",
+        "script": "./extra/scripts/azure/post-phase-4.ps1"
+      },
+       {
+        "type": "powershell",
+        "inline": [
+          "Write-Output Phase-3-Deprovisioning",
+          "if( Test-Path $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml ){ rm $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml -Force}",
+          "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+          "Write-Output Phase-6-Deprovisioned",
+          "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }",
+          "Unregister-ScheduledTask -TaskName packer-* -Confirm:$false -Verbose",
+          "Write-Output 'End of Phase-6-Deprovision'"
+        ]
+      }
+     ]
+   }
