@@ -1,5 +1,23 @@
 # Changelog
 
+## 2021-04-15 - Version 1.0.5
+
+* upgraded `extras`
+* bump centos7 version to 7.9 Generation 2
+* added Ubuntu 20.04 Generation 2
+
+## 2020-08-12 - Version 1.0.4
+
+* upgraded `extras`
+* bump centos7 version to 7.8
+* change `"provision_script_options"` variable to:
+  * -p (true/false) - switch Install Puppet on/off
+  * -w (true/false) - switch Install Webmin on/off (CentOS7 only)
+  * -h (true/false) - switch Install Hyper-V integration services on/off
+  * -u (true/false) - switch yum update all on/off (usable when creating previous than `latest` version of OS)
+  * -z (true/false) - switch Zabbix-agent installation
+  * -c (true/false) - switch Cockpit installation (CentOS8 only)
+
 ## 2020-03-24 - Version 1.0.3
 
 * upgraded `extras`

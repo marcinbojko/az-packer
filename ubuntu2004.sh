@@ -1,6 +1,6 @@
 #!/bin/bash
 secrets='./secrets/secrets.json'
-path='./centos7-md/centos7-md.json'
+path='./ubuntu/ubuntu2004-md.json'
 
 if ! [ -x "$(command -v packer)" ]; then
   echo "Packer not found - exiting"

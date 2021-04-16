@@ -6,7 +6,7 @@ Uses same codebase and rules as [https://github.com/marcinbojko/hv-packer](https
 
 ## Requirements
 
-* packer >= `1.5.4`. Do not use packer 1.3.0/1.3.1 - [https://github.com/hashicorp/packer/issues/6733](https://github.com/hashicorp/packer/issues/6733)
+* packer >= `1.7.2`. Do not use packer versions below - [https://github.com/hashicorp/packer/issues/6733](https://github.com/hashicorp/packer/issues/6733)
 * Azure Subscription access and variables needed for packer
 
 ## Usage
@@ -35,7 +35,7 @@ To adjust to your Azure subscription, please check:
 
   |Package|Version|
   |-------|-------|
-  |puppet-agent|5.5.19|
+  |puppet-agent|5.5.22|
   |conemu|latest|
   |dotnetfx|latest|
   |sysinternals|latest|
@@ -68,6 +68,20 @@ To adjust to your Azure subscription, please check:
 
 * script `centos7.sh`
 
+### Ubuntu 20.04
+
+* script `ubuntu2004.sh`
+
 ### Warnings & workarounds
 
 * as a temporary solution Windows based machines are using Admin account `adpacker` which is being deleted after creation
+
+### Get images
+
+```bash
+az vm image list --offer=Centos --all --publisher=OpenLogic
+```
+
+```bash
+az vm image list --offer=Ubuntu --publisher=Canonical --sku=20_04-lts-gen2 --all
+```

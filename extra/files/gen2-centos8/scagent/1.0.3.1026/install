@@ -3,12 +3,12 @@
 # Copyright (C) Microsoft Corporation. All rights reserved.
 #
 # Install or remove Microsoft System Center Virtual Machine Manager Agent
-#
+# 
 #
 # internal function to create log entry.  Timestamps with UTC
 #
 function WriteLog {
-
+   
     logfile="/var/opt/microsoft/scvmmguestagent/log/scvmm-install.log"
 
     if [ ! -d `dirname ${logfile}` ]
@@ -18,7 +18,7 @@ function WriteLog {
 
     echo -e `date -u '+%D %T'`" UTC\t$1\t${caller}"
     echo -e `date -u '+%D %T'`" UTC\t$1\t${caller}">>"${logfile}"
-
+    
 }
 
 function usage {
